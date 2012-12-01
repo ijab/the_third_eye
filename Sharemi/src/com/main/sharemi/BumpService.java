@@ -28,9 +28,11 @@ public class BumpService extends CordovaPlugin {
 	
 	private IBumpAPI api;
 	private boolean findMatch=false;
-	private int Max_Attempt=100;
+	private int Max_Attempt=200;
 	private String matcheduser="";
 	private String username="";
+	private boolean isRunning=false;
+	private boolean isReady=false;
 	
 	
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -91,6 +93,8 @@ public class BumpService extends CordovaPlugin {
                 } else if (action.equals(BumpAPIIntents.CONNECTED)) {
                     Log.i("BumpService", "Connected to Bump...");
                     api.enableBumping();
+                    isReady = true;
+                    isRunning=true;
                 }
             } catch (RemoteException e) {}
         } 
@@ -102,7 +106,22 @@ public class BumpService extends CordovaPlugin {
 	    if ("Action1".equals(action)) {
 	        new Thread(new Runnable() {
 	            public void run() {
-	            	MainActivity.instance.startListening(connection, receiver);
+	            	//MainActivity.instance.startListening(connection, receiver); 
+	            	while(!isReady){
+	            		try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+	            	}
+	            	if(!isRunning){
+	            		try {
+							api.enableBumping();
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
+	            		isRunning=true;
+	            	}
 	            	int attempt=0;
 	            	while(!findMatch){
 	            		try {
@@ -119,7 +138,14 @@ public class BumpService extends CordovaPlugin {
 	            	if(findMatch){
 	            		callbackContext.success("FindMatch:"+matcheduser); 
 	            	}
-	            	MainActivity.instance.endListening(connection, receiver);
+	            	try {
+						api.disableBumping();
+						isRunning=false;
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            	//MainActivity.instance.endListening(connection, receiver);
 	            }
 	        }).start();
 	        return true;

@@ -17,8 +17,12 @@ public class MainActivity extends DroidGap {
 
 	public static MainActivity instance;
 	private Intent bumpservice;
+	private BroadcastReceiver br;
+	private ServiceConnection sc;
 	
 	public void initBump(ServiceConnection connection,BroadcastReceiver receiver){
+		br=receiver;
+		sc=connection;
 		bumpservice=new Intent(IBumpAPI.class.getName());
 		bindService(bumpservice,
                 connection, Context.BIND_AUTO_CREATE);
@@ -30,7 +34,7 @@ public class MainActivity extends DroidGap {
         filter.addAction(BumpAPIIntents.MATCHED);
         filter.addAction(BumpAPIIntents.CONNECTED);
         registerReceiver(receiver, filter);
-        stopService(bumpservice);
+        //stopService(bumpservice);
 	}
 	
 	  
@@ -49,6 +53,12 @@ public class MainActivity extends DroidGap {
     	instance=this;
         super.onCreate(savedInstanceState);
         super.loadUrl("http://150.212.42.227:8084/AJAX_Test");
+    }
+    
+    public void onDestory(){
+    	super.onDestroy();
+    	unbindService(sc);
+    	unregisterReceiver(br);
     }
 
     
