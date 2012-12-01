@@ -1,6 +1,8 @@
 package com.main.sharemi;
 
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.api.CallbackContext;
+import org.apache.cordova.api.CordovaInterface;
 import org.apache.cordova.api.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +31,14 @@ public class BumpService extends CordovaPlugin {
 	private int Max_Attempt=100;
 	private String matcheduser="";
 	private String username="";
+	
+	
+	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        MainActivity.instance.initBump(connection,receiver);
+    }
+	
+	
 
     public final ServiceConnection connection = new ServiceConnection() {
    
