@@ -192,17 +192,14 @@ function updateFilesList(resp)
 
 
     // If somebody ask to bump
-    if (typeof console != "undefined") { 
-        console.log("resp.bump " + resp.bump);
-    }
     if(!_debug && resp.data.bump.length > 0)
     {
         // Give some info to user that somebody want to ask his/her file
         var param = {};
         param.username = $('#logged_user_name').val();
-        param.fileid = resp.bump[0].fileid;
-        param.filename = resp.bump[0].filename;
-        param.requestee = resp.bump[0].requestee;
+        param.fileid = resp.data.bump[0].fileid;
+        param.filename = resp.data.bump[0].filename;
+        param.requestee = resp.data.bump[0].requestee;
         param.isRequestee = 'false';
         useBumpPlugin(param);
     }
@@ -341,6 +338,9 @@ function onFileSystemSuccess(fileSystem)
     var dirEntry=fileSystem.root;
     var directoryReader = dirEntry.createReader();
 
+    // Remove current local list
+    $('#local_files_list').remove();
+
     // Get a list of all the entries in the directory
     var onReadEntry = function(entries)
                     {
@@ -362,6 +362,11 @@ function successIterFileSystem(entries, parent_node)
 
     for (i=0; i<entries.length; i++) 
     {
+        if(entries[i].name[0] == '.' || entries[i].name == 'LOST.DIR')
+        {
+            continue;
+        }
+
         if(entries[i].isDirectory)
         {
             // Add directory node
@@ -379,6 +384,10 @@ function successIterFileSystem(entries, parent_node)
             {
                 $('#' + parent_node).append(html);
             }
+
+            // Refresh collapsibleset
+            $( "#" + entries[i].name + local_file_ix ).collapsible();
+
             // Recursively read it
             var directoryReader = entries[i].createReader();
 
@@ -401,6 +410,7 @@ function successIterFileSystem(entries, parent_node)
                 if($('#' + ulID).length < 1) 
                 {
                     $('#local_files_list').append(ulHtml);
+                    $('#' + ulID).listview();
                 }
             }
             else
@@ -411,12 +421,11 @@ function successIterFileSystem(entries, parent_node)
                 }
             }
             $('#' + ulID).append(liEl);
-            $('#' + ulID).listview.refresh();
+            $('#' + ulID).listview('refresh');
 
             local_file_ix++;
         }
     }
-    $("#filelist").html(message);
 }
 
 function uploadFileForSharing(type)
