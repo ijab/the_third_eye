@@ -195,7 +195,7 @@ function updateFilesList(resp)
     if (typeof console != "undefined") { 
         console.log("resp.bump " + resp.bump);
     }
-    if(!_debug && resp.bump.length > 0)
+    if(!_debug && resp.data.bump.length > 0)
     {
         // Give some info to user that somebody want to ask his/her file
         var param = {};
