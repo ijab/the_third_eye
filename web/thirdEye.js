@@ -5,6 +5,7 @@
  * File: thirdEye.js
  */
 
+var _debug = true;
 var refreshTimer = null;
 
 /**
@@ -64,9 +65,14 @@ $(function(){
 
     // When change to file list page, try to get shared files
     $('#files_list').live('pageshow',function (){
-        //startService();
-        //Test
-        updateFilesList();    
+        if(!_debug)
+        {
+            startService();
+        }
+        else
+        {//Test
+            updateFilesList();
+        }    
     });
 
     // When change to select file page, try to list local files for choosing to share
@@ -134,18 +140,24 @@ function updateLocation()
  */
 function updateFilesList(resp)
 {
-    // if(resp.msg != 'success')
-    // {
-    //     return;
-    // }
+     if(!_debug && resp.msg != 'success')
+     {
+         return;
+     }
 
     // update shared with me files list
     $('#shared_with_me_files_list li').remove();
-    var files = resp.data.files;
-
-    // files = [{fileid:"1", filename:"nat.pdf", owner:"ijab", type:"public"},
-    //          {fileid:"2", filename:"abcc.doc", owner:"ijab", type:"public"},
-    //          {fileid:"3", filename:"gowhere.xls", owner:"ijab", type:"private"},];
+    var files = null;
+    if(!_debug) 
+    {
+        files = resp.data.files;
+    }
+    else
+    {
+        files = [{fileid:"1", filename:"nat.pdf", owner:"ijab", type:"public"},
+                 {fileid:"2", filename:"abcc.doc", owner:"ijab", type:"public"},
+                 {fileid:"3", filename:"gowhere.xls", owner:"ijab", type:"private"}];
+    }
     $.each(files, function(index, file) {
         $('#shared_with_me_files_list').append(
                 '<li id="' + file.fileid + '">' + 
@@ -159,11 +171,16 @@ function updateFilesList(resp)
     
     // update my shared files list
     $('#my_shared_files_list li').remove();
-    files = resp.data.myfiles;
-
-    // files = [{fileid:"1", filename:"nat.gps", owner:"ijab", type:"public"},
-    //          {fileid:"2", filename:"abcc.html", owner:"ijab", type:"public"},
-    //          {fileid:"3", filename:"gowhere.php", owner:"ijab", type:"private"}];
+    if(!_debug) 
+    {
+        files = resp.data.myfiles;
+    }
+    else
+    {
+        files = [{fileid:"1", filename:"nat.gps", owner:"ijab", type:"public"},
+             {fileid:"2", filename:"abcc.html", owner:"ijab", type:"public"},
+             {fileid:"3", filename:"gowhere.php", owner:"ijab", type:"private"}];
+    }
     $.each(files, function(index, file) {
         $('#my_shared_files_list').append('<li id="' + file.fileid + '">' + 
                 '<a href="javascript:removeSharedFile(\'' + file.fileid + '\', \'' + file.filename + '\', \'' + file.type + '\')">' +
@@ -175,7 +192,7 @@ function updateFilesList(resp)
 
 
     // If somebody ask to bump
-    if(resp.bump.length > 0)
+    if(!_debug && resp.bump.length > 0)
     {
         // Give some info to user that somebody want to ask his/her file
         var param = {};
@@ -183,7 +200,7 @@ function updateFilesList(resp)
         param.fileid = resp.bump[0].fileid;
         param.filename = resp.bump[0].filename;
         param.requestee = resp.bump[0].requestee;
-        param.isrequestee = 'false';
+        param.isRequestee = 'false';
         useBumpPlugin(param);
     }
 }
@@ -251,7 +268,7 @@ function downloadFile(fileid, filename, owner, type)
             param.fileid = fileid;
             param.filename = filename;
             param.requestee = $('#logged_user_name').val();
-            param.isrequestee = 'true';
+            param.isRequestee = 'true';
             useBumpPlugin(param);
         },
         'json');
@@ -285,7 +302,7 @@ function removeSharedFile(fileid, filename, type)
  * @param {Object} postion
  */
 function onGeoSuccess(position) {
-    $.get(baseURL + 'list.php', 
+    $.get(baseURL + 'getLocation.php', 
         {
             username : $('#logged_user_name').val(),
             x : position.coords.longitude,
@@ -462,17 +479,21 @@ function useBumpPlugin(param)
  */
 function bumpPluginSuccessHandler(result)
 {
+
     // Match success and notify the server
-    $.get(baseURL + 'bump.php', 
-        {
-            action : $('#logged_user_name').val(),
-            //x : position.coords.longitude,
-            //y : position.coords.latitude
-        }, 
-        function(data) {
-            
-        },
-        'json');
+    if(result.isRequestee == 'true')
+    {
+        $.get(baseURL + 'bump.php', 
+            {
+                action : "stopBump",
+                fileid : result.fileid,
+                filename : result.filename
+            }, 
+            function(data) {
+                
+            },
+            'json');
+    }
 
     // Try to download the file
     saveFile(result.fileid, result.filename);
