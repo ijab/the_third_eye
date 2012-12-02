@@ -6,9 +6,9 @@ import org.apache.cordova.api.CordovaInterface;
 import org.apache.cordova.api.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,6 +31,9 @@ public class BumpService extends CordovaPlugin {
 	private int Max_Attempt=200;
 	private String matcheduser="";
 	private String username="";
+	private String fileid="";
+	private String filename="";
+	private String identity="unknown";
 	private boolean isRunning=false;
 	private boolean isReady=false;
 	
@@ -103,6 +106,9 @@ public class BumpService extends CordovaPlugin {
 	
 	public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 		username=args.getString(0);
+		fileid=args.getString(1);
+		filename=args.getString(2);
+		identity=args.getString(3);
 	    if ("Action1".equals(action)) {
 	        new Thread(new Runnable() {
 	            public void run() {
@@ -132,13 +138,30 @@ public class BumpService extends CordovaPlugin {
 	            		attempt++;
 	            		if(attempt>Max_Attempt){
 	            			callbackContext.error("Time out for finding match for "+username);
+	            			matcheduser="";
+		            		fileid="";
+		            		filename="";
+		            		identity="unknown";
 	            			break;
 	            		}
 	            	}
 	            	if(findMatch){
-	            		callbackContext.success("FindMatch:"+matcheduser); 
+	            		JSONObject res=new JSONObject();
+	            		try {
+							res.put("username", matcheduser);
+							res.put("fileid", fileid);
+							res.put("filename", filename);
+							res.put("isRequestee", identity);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	            		callbackContext.success(res); 
 	            		findMatch=false;
 	            		matcheduser="";
+	            		fileid="";
+	            		filename="";
+	            		identity="unknown";
 	            	}
 	            	try {
 						api.disableBumping();

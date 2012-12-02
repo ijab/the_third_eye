@@ -41,7 +41,7 @@
        $base_host .= str_replace(basename($_SERVER['ORIG_SCRIPT_NAME']),"",$_SERVER['ORIG_SCRIPT_NAME']);
       }
 
-      echo 'var baseURL = "' . $base_host . '/thirdeye/"';
+      echo 'var baseURL = "' . $base_host . '"';
       echo '</script>';
     ?>
 
@@ -120,6 +120,11 @@
       <div data-role="footer" data-theme="d">
         
       </div><!-- /footer -->
+
+      <div data-role="popup" id="popupInfo" class="ui-content" data-theme="e" style="max-width:350px;">
+          <p id="info_tip">Here is a <strong>tiny popup</strong> being used like a tooltip. The text will wrap to multiple lines as needed.</p>
+    </div>
+
     </div><!-- /page one -->
 
 
@@ -182,8 +187,18 @@
       </div> <!-- content -->
 
       <div data-role="footer">
-        <h4>footer</h4>
+        
       </div> <!-- footer -->
+
+      <!-- popup share file menu -->
+      <div data-role="popup" id="shareFileMenu" data-overlay-theme="b">
+        <ul data-role="listview" data-inset="true" style="width:180px;" data-theme="b">
+          <li><a href="" id="share_file_public">Share Public</a></li>
+          <li><a href="" id="share_file_private">Share Private</a></li>
+        </ul>
+        <input type="hidden" id="try_to_share_file_name" name="try_to_share_file_name" value="" />
+        <input type="hidden" id="try_to_share_file" name="try_to_share_file" value="" />
+      </div>
 
     </div><!-- /page three register -->
 
