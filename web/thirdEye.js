@@ -5,7 +5,7 @@
  * File: thirdEye.js
  */
 
-var _debug = false;
+var _debug = true;
 var refreshTimer = null;
 
 /**
@@ -80,6 +80,11 @@ $(function(){
         if(window.requestFileSystem)
         {
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, onError);
+        }
+        else
+        {
+            var testData = [{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/LOST.DIR","name":"LOST.DIR"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Android","name":"Android"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/DCIM","name":"DCIM"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.GuoheAd","name":".GuoheAd"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.0102","name":".0102"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/sogou","name":"sogou"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/tencent","name":"tencent"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/openfeint","name":"openfeint"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTGIF","name":"MTGIF"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bluetooth","name":"bluetooth"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ibuka","name":"ibuka"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.pps","name":".pps"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/msf","name":"msf"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ndcommplatform","name":"ndcommplatform"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/youmicache","name":"youmicache"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wowfish","name":"wowfish"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Youdao","name":"Youdao"},{"isDirectory":false,"isFile":true,"fullPath":"file:\/\/\/storage\/sdcard0\/robo_defense_full.bak","name":"robo_defense_full.bak"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTXX","name":"MTXX"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/UCDownloads","name":"UCDownloads"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Songs","name":"Songs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bugreports","name":"bugreports"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/PandaSpace","name":"PandaSpace"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.estrongs","name":".estrongs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/snesroms","name":"snesroms"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/91PandaReader","name":"91PandaReader"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/backups","name":"backups"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.cerience","name":".cerience"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/catstudio","name":"catstudio"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/QQBrowser","name":"QQBrowser"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/KuwoMusic","name":"KuwoMusic"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/byread","name":"byread"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Meterial","name":"Meterial"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/My Documents","name":"My Documents"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ONS","name":"ONS"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wallpaper","name":"wallpaper"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ringtones","name":"ringtones"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/music","name":"music"}];
+            successIterFileSystem(testData, null);
         }
     });
 
@@ -320,9 +325,8 @@ function onGeoSuccess(position) {
  */
 function onError(error) 
 {
-    var message='code: '    + error.code    + '\n' +
-                'message: ' + error.message + '\n';
-    $("#stage").html(message);
+    $('#info_tip').text(error.message);
+    $('#popupInfo').popup('open');
 }
 
 /**
@@ -362,11 +366,17 @@ function successIterFileSystem(entries, parent_node)
 
     for (i=0; i<entries.length; i++) 
     {
-        if(entries[i].name[0] == '.' || entries[i].name == 'LOST.DIR')
+        if(entries[i].name[0] == '.' || entries[i].name == 'LOST.DIR') continue;
+        try
+        {
+            $( "#" + entries[i].name + local_file_ix );
+        }
+        catch(err)
         {
             continue;
         }
 
+ 
         if(entries[i].isDirectory)
         {
             // Add directory node
@@ -389,14 +399,17 @@ function successIterFileSystem(entries, parent_node)
             $( "#" + entries[i].name + local_file_ix ).collapsible();
 
             // Recursively read it
-            var directoryReader = entries[i].createReader();
+            if(!_debug)
+            {
+                var directoryReader = entries[i].createReader();
 
-            // Get a list of all the entries in the directory
-            var onReadEntry = function(sub_entries)
-                            {
-                                successIterFileSystem(sub_entries, local_parent_node);
-                            };
-            directoryReader.readEntries(onReadEntry, onError);
+                // Get a list of all the entries in the directory
+                var onReadEntry = function(sub_entries)
+                                {
+                                    successIterFileSystem(sub_entries, local_parent_node);
+                                };
+                directoryReader.readEntries(onReadEntry, onError);
+            }
         }
         else
         {
@@ -503,8 +516,7 @@ function bumpPluginSuccessHandler(result)
             }, 
             function(data) {
                 
-            },
-            'json');
+            });
     }
 
     // Try to download the file
