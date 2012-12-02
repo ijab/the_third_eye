@@ -137,6 +137,8 @@ public class BumpService extends CordovaPlugin {
 	            	}
 	            	if(findMatch){
 	            		callbackContext.success("FindMatch:"+matcheduser); 
+	            		findMatch=false;
+	            		matcheduser="";
 	            	}
 	            	try {
 						api.disableBumping();
