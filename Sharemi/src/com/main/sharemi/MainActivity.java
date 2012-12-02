@@ -53,7 +53,7 @@ public class MainActivity extends DroidGap {
     public void onCreate(Bundle savedInstanceState) {
     	instance=this;
         super.onCreate(savedInstanceState);
-        super.loadUrl("http://150.212.42.227:8084/AJAX_Test");
+        super.loadUrl("http://150.212.42.45/Sharemi/thirdeye.php");
     }
     
     public void onDestory(){

@@ -5,7 +5,7 @@
  * File: thirdEye.js
  */
 
-var _debug = true;
+var _debug = false;
 var refreshTimer = null;
 
 /**
@@ -50,7 +50,7 @@ $(function(){
    
     // Bind to login submit button
     $("#login_submit").bind('vclick', function(){
-        $('#logged_user_name').val('ijab');
+        $('#logged_user_name').val($('#username').val());
         $.mobile.changePage($("#files_list"));
     });
 
