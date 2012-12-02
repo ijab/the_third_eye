@@ -192,6 +192,9 @@ function updateFilesList(resp)
 
 
     // If somebody ask to bump
+    if (typeof console != "undefined") { 
+        console.log("resp.bump " + resp.bump);
+    }
     if(!_debug && resp.bump.length > 0)
     {
         // Give some info to user that somebody want to ask his/her file
