@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.util.Log;
 
+
 public class MainActivity extends DroidGap {
 
 	public static MainActivity instance;
