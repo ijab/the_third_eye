@@ -10,6 +10,7 @@ import org.apache.cordova.api.CordovaPlugin;
 import com.bump.api.BumpAPIIntents;
 import com.bump.api.IBumpAPI;
 
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -18,7 +19,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 
 public class MainActivity extends DroidGap
@@ -60,9 +63,10 @@ public class MainActivity extends DroidGap
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	instance=this;
+    	instance = this;
         super.onCreate(savedInstanceState);
         
+        this.setStringProperty("errorUrl", "file:///android_asset/www/index.html");
         //setContentView(R.layout.main);
         
         //webView = (CordovaWebView) findViewById(R.id.uniappWebView);
@@ -74,51 +78,5 @@ public class MainActivity extends DroidGap
     	super.onDestroy();
     	unbindService(sc);
     	unregisterReceiver(br);
-    }
-
-    /*
-	@Deprecated
-	public void cancelLoadUrl() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public Activity getActivity() {
-		// TODO Auto-generated method stub
-		return this;
-	}
-
-
-	@Deprecated
-	public Context getContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	public ExecutorService getThreadPool() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	public Object onMessage(String arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	public void setActivityResultCallback(CordovaPlugin arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void startActivityForResult(CordovaPlugin arg0, Intent arg1, int arg2) {
-		// TODO Auto-generated method stub
-		
-	}
-	*/
-    
+    }    
 }
