@@ -105,10 +105,10 @@ public class BumpService extends CordovaPlugin {
     
 	
 	public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-		username=args.getString(0);
-		fileid=args.getString(1);
-		filename=args.getString(2);
-		identity=args.getString(3);
+		username=((JSONObject)args.get(0)).getString("username");
+		fileid=((JSONObject)args.get(0)).getString("fileid");
+		filename=((JSONObject)args.get(0)).getString("filename");
+		identity=((JSONObject)args.get(0)).getString("isRequestee");
 	    if ("Action1".equals(action)) {
 	        new Thread(new Runnable() {
 	            public void run() {
@@ -156,6 +156,8 @@ public class BumpService extends CordovaPlugin {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+	            		
+	            		Log.d("BUMP Service A", "Match success and call back");
 	            		callbackContext.success(res); 
 	            		findMatch=false;
 	            		matcheduser="";
@@ -164,6 +166,7 @@ public class BumpService extends CordovaPlugin {
 	            		identity="unknown";
 	            	}
 	            	try {
+	            		Log.d("BUMP Service A", "Try to disable BUMP service");
 						api.disableBumping();
 						isRunning=false;
 					} catch (RemoteException e) {

@@ -8,6 +8,18 @@
 var _debug = false;
 var refreshTimer = null;
 
+// String.prototype.hashCode = function(){
+//     var hash = 0;
+//     if (this.length == 0) return hash;
+//     for (i = 0; i < this.length; i++) {
+//         char = this.charCodeAt(i);
+//         hash = ((hash<<5)-hash)+char;
+//         hash = hash & hash; // Convert to 32bit integer
+//     }
+//     return hash;
+// }
+
+
 /**
  * ThirdEyePlugin : Cordova Plugins to use Bump APIs
  * Constructor
@@ -63,8 +75,10 @@ $(function(){
         uploadFileForSharing('private');
     });
 
+   
+
     // When change to file list page, try to get shared files
-    $('#files_list').live('pageshow',function (){
+    $('#files_list').live('pageinit',function (){
         if(!_debug)
         {
             startService();
@@ -75,11 +89,17 @@ $(function(){
         }    
     });
 
+
     // When change to select file page, try to list local files for choosing to share
-    $('#select_file').live('pageshow',function (){
+    $('#select_file_page').live('pageinit',function(){
         if(window.requestFileSystem)
         {
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, onError);
+        }
+        else
+        {
+            var testData = [{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/LOST.DIR","name":"LOST.DIR"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Android","name":"Android"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/DCIM","name":"DCIM"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.GuoheAd","name":".GuoheAd"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.0102","name":".0102"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/sogou","name":"sogou"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/tencent","name":"tencent"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/openfeint","name":"openfeint"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTGIF","name":"MTGIF"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bluetooth","name":"bluetooth"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ibuka","name":"ibuka"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.pps","name":".pps"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/msf","name":"msf"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ndcommplatform","name":"ndcommplatform"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/youmicache","name":"youmicache"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wowfish","name":"wowfish"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Youdao","name":"Youdao"},{"isDirectory":false,"isFile":true,"fullPath":"file:\/\/\/storage\/sdcard0\/robo_defense_full.bak","name":"robo_defense_full.bak"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTXX","name":"MTXX"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/UCDownloads","name":"UCDownloads"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Songs","name":"Songs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bugreports","name":"bugreports"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/PandaSpace","name":"PandaSpace"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.estrongs","name":".estrongs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/snesroms","name":"snesroms"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/91PandaReader","name":"91PandaReader"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/backups","name":"backups"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.cerience","name":".cerience"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/catstudio","name":"catstudio"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/QQBrowser","name":"QQBrowser"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/KuwoMusic","name":"KuwoMusic"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/byread","name":"byread"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Meterial","name":"Meterial"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/My Documents","name":"My Documents"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ONS","name":"ONS"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wallpaper","name":"wallpaper"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ringtones","name":"ringtones"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/music","name":"music"}];
+            successIterFileSystem(testData, null);
         }
     });
 
@@ -159,6 +179,10 @@ function updateFilesList(resp)
                  {fileid:"3", filename:"gowhere.xls", owner:"ijab", type:"private"}];
     }
     $.each(files, function(index, file) {
+        if (typeof console != "undefined") { 
+            console.log("Add shared with me: " + file.filename);
+        }
+
         $('#shared_with_me_files_list').append(
                 '<li id="' + file.fileid + '">' + 
                 '<a href="javascript:downloadFile(\'' + file.fileid + '\', \'' + file.filename + '\', \'' + file.owner + '\', \'' + file.type + '\')">' +
@@ -182,6 +206,10 @@ function updateFilesList(resp)
              {fileid:"3", filename:"gowhere.php", owner:"ijab", type:"private"}];
     }
     $.each(files, function(index, file) {
+        if (typeof console != "undefined") { 
+            console.log("Add my shared: " + file.filename);
+        }
+
         $('#my_shared_files_list').append('<li id="' + file.fileid + '">' + 
                 '<a href="javascript:removeSharedFile(\'' + file.fileid + '\', \'' + file.filename + '\', \'' + file.type + '\')">' +
                 '<h4>' + file.filename + '</h4>' +
@@ -192,17 +220,14 @@ function updateFilesList(resp)
 
 
     // If somebody ask to bump
-    if (typeof console != "undefined") { 
-        console.log("resp.bump " + resp.bump);
-    }
     if(!_debug && resp.data.bump.length > 0)
     {
         // Give some info to user that somebody want to ask his/her file
         var param = {};
         param.username = $('#logged_user_name').val();
-        param.fileid = resp.bump[0].fileid;
-        param.filename = resp.bump[0].filename;
-        param.requestee = resp.bump[0].requestee;
+        param.fileid = resp.data.bump[0].fileid;
+        param.filename = resp.data.bump[0].filename;
+        param.requestee = resp.data.bump[0].requestee;
         param.isRequestee = 'false';
         useBumpPlugin(param);
     }
@@ -211,6 +236,42 @@ function updateFilesList(resp)
 /**
  * Helper funciton for download file
  */
+
+function getDirForDownload(fileSystem, fileid, filename){
+    $("#info_tip").html("getDirForDownload " + filename);
+    var dirEntry=fileSystem.root;
+    var callbackFun = function(dir)
+    {
+        readyForDownload(dir, fileid, filename);
+    };
+    dirEntry.getDirectory("SharemiDocs", {create: true, exclusive: false}, callbackFun, onError);
+}
+
+function readyForDownload(dir, fileid, filename){
+    $("#info_tip").html("Ready for download " + filename);
+    var fileTransfer = new FileTransfer();
+    var thisHREF = document.location.href;  
+    var rootURL =thisHREF.split("Sharemi")[0];
+    var uri = encodeURI(rootURL+"Sharemi/download.php?fileid="+ fileid);
+    fileTransfer.onprogress = function(progressEvent) {
+    if (progressEvent.lengthComputable) {
+            $("#info_tip").html("Finished "+progressEvent.loaded+"/"+progressEvent.total);
+          } else {
+            $("#info_tip").html("downloading!");
+          }
+      };
+    fileTransfer.download(
+        uri,
+        dir.fullPath+"/"+ filename,
+        function(entry) {
+            $("#info_tip").html("Completely download "+entry.fullPath);
+        },
+        function(error) {
+            $("#info_tip").html("Fail to download "+error.message);
+        }
+    );
+}
+
 function saveFile(fileid, filename)
 {
     // !! Assumes filePath is a valid path on the device
@@ -218,32 +279,11 @@ function saveFile(fileid, filename)
     $("#info_tip").html("Start downloading ...");
     $('#popupInfo').popup('open');
 
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, getDirForDownload, onError);
-    function getDirForDownload(fileSystem){
-        var dirEntry = fileSystem.root;
-        dirEntry.getDirectory("SharemiDocs", {create: true, exclusive: false}, readyForDownload, onError);
-        
-        function readyForDownload(dir){
-            var fileTransfer = new FileTransfer();
-            var uri = encodeURI(baseURL+"download.php?fileid="+fileid);
-            fileTransfer.onprogress = function(progressEvent) {
-                                    if (progressEvent.lengthComputable) {
-                                        $("#info_tip").html("Finished " + progressEvent.loaded + "/" + progressEvent.total);
-                                    }
-            };
-
-            fileTransfer.download(
-                uri,
-                dir.fullPath+"/" + filename,
-                function(entry) {
-                    $("#info_tip").html("Completely download " + entry.fullPath);
-                },
-                function(error) {
-                    $("#info_tip").html("Fail to download " + error.message);
-                }
-            );
-        }
-    }
+    var callbackFun = function(dir)
+    {
+       getDirForDownload(dir, fileid, filename);
+    };
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, callbackFun, onError);
 }
 
 /**
@@ -259,6 +299,7 @@ function downloadFile(fileid, filename, owner, type)
     {
         $.get(baseURL + 'bump.php', 
         {
+            action : 'startBump',
             fileid : fileid,
             filename : filename,
             requestee : $('#logged_user_name').val()
@@ -323,9 +364,8 @@ function onGeoSuccess(position) {
  */
 function onError(error) 
 {
-    var message='code: '    + error.code    + '\n' +
-                'message: ' + error.message + '\n';
-    $("#stage").html(message);
+    $('#info_tip').text(error.message);
+    $('#popupInfo').popup('open');
 }
 
 /**
@@ -340,6 +380,9 @@ function onFileSystemSuccess(fileSystem)
 {
     var dirEntry=fileSystem.root;
     var directoryReader = dirEntry.createReader();
+
+    // Remove current local list
+    $('#local_files_list').removeChildren();
 
     // Get a list of all the entries in the directory
     var onReadEntry = function(entries)
@@ -359,17 +402,20 @@ function successIterFileSystem(entries, parent_node)
     var i;
     var message="";
 
-
+   
     for (i=0; i<entries.length; i++) 
     {
+        if(entries[i].name[0] == '.' || entries[i].name == 'LOST.DIR') continue;
+         
         if(entries[i].isDirectory)
         {
             // Add directory node
-            var html = '<div id="' + entries[i].name + local_file_ix;
-                html += '" data-role="collapsible" data-collapsed="false" data-theme="e" data-content-theme="c">';
+            var colID = entries[i].name.replace(/ /g,'_')
+            var html = '<div id="' + colID;
+                html += '" data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="c">';
                 html += '<h3>' + entries[i].name + '</h3></div>';
-            local_parent_node = entries[i].name + local_file_ix;
-            local_file_ix++;
+            local_parent_node = colID;
+            
 
             if(!parent_node)
             {
@@ -379,15 +425,27 @@ function successIterFileSystem(entries, parent_node)
             {
                 $('#' + parent_node).append(html);
             }
-            // Recursively read it
-            var directoryReader = entries[i].createReader();
 
-            // Get a list of all the entries in the directory
-            var onReadEntry = function(sub_entries)
-                            {
-                                successIterFileSystem(sub_entries, local_parent_node);
-                            };
-            directoryReader.readEntries(onReadEntry, onError);
+            // Refresh collapsibleset
+            $("#" + colID ).collapsible();
+            if (typeof console != "undefined") { 
+                console.log("Append collapsible element " + entries[i].name);
+            }
+
+            local_file_ix++;
+
+            // Recursively read it
+            // if(!_debug)
+            // {
+            //     var directoryReader = entries[i].createReader();
+
+            //     // Get a list of all the entries in the directory
+            //     var onReadEntry = function(sub_entries)
+            //                     {
+            //                         successIterFileSystem(sub_entries, local_parent_node);
+            //                     };
+            //     directoryReader.readEntries(onReadEntry, onError);
+            // }
         }
         else
         {
@@ -401,6 +459,7 @@ function successIterFileSystem(entries, parent_node)
                 if($('#' + ulID).length < 1) 
                 {
                     $('#local_files_list').append(ulHtml);
+                    $('#' + ulID).listview();
                 }
             }
             else
@@ -411,12 +470,14 @@ function successIterFileSystem(entries, parent_node)
                 }
             }
             $('#' + ulID).append(liEl);
-            $('#' + ulID).listview.refresh();
+            $('#' + ulID).listview('refresh');
+            if (typeof console != "undefined") { 
+                console.log("Append list element " + entries[i].name);
+            }
 
             local_file_ix++;
         }
     }
-    $("#filelist").html(message);
 }
 
 function uploadFileForSharing(type)
@@ -457,12 +518,19 @@ function uploadFileForSharing(type)
     ft.upload(filepath, encodeURI(baseURL + "upload.php"), succ, fail, options);
 }
 
-function popupShareMenu(filename, filepath)
+function popupShareMenu(filename, filepath, isDirectory)
 {
-    $('#try_to_share_file_name').val(filename);
-    $('#try_to_share_file').val(filepath);
+    if(isDirectory)
+    {
 
-    $('#shareFileMenu').popup('open');
+    }
+    else
+    {
+        $('#try_to_share_file_name').val(filename);
+        $('#try_to_share_file').val(filepath);
+
+        $('#shareFileMenu').popup('open');
+    }
 }
 
 /**
@@ -494,8 +562,7 @@ function bumpPluginSuccessHandler(result)
             }, 
             function(data) {
                 
-            },
-            'json');
+            });
     }
 
     // Try to download the file
@@ -507,7 +574,7 @@ function bumpPluginSuccessHandler(result)
  * @method bumpPluginErrorHandler
  * @param {Object} result
  */
-function bumpPluginErrorHandler (error)
+function bumpPluginErrorHandler(error)
 {
     $('#info_tip').text(error);
     $('#popupInfo').popup('open');

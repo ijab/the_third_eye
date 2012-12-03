@@ -51,7 +51,8 @@
     <script type="text/javascript" src="thirdEye.js"></script>
   </head>
   <body>
-    <!-- Start of second page: #login_register -->
+
+     <!-- Start of second page: #login_register -->
     <div data-role="page" id="login_register" data-theme="a">
 
       <div data-role="header">
@@ -82,7 +83,8 @@
 
     </div><!-- /page two register -->
 
-    <!-- Start of first page: #one -->
+   
+     <!-- Start of first page: #one -->
     <div data-role="page" id="files_list">
 
       <div data-role="header">
@@ -111,7 +113,7 @@
               <li><a href="index.html">Sent <span class="ui-li-count">public</span></a></li>
               <li><a href="index.html">Trash <span class="ui-li-count">private</span></a></li>
             </ul>
-            <div data-theme="d"><a href="#select_file"  data-direction="reverse" data-role="button" data-theme="b">Share Files</a></div>
+            <div data-theme="d"><a href="#select_file_page" data-rel="page" data-position-to="window" data-theme="b" data-role="button" data-inline="true" data-mini="true">Share Files</a></div>
           </div>
         </div>
 
@@ -127,70 +129,17 @@
 
     </div><!-- /page one -->
 
-
-    <!-- Start of third page: #select_file -->
-    <div data-role="page" id="select_file" data-theme="a">
+    <div data-role="page" id="select_file_page" data-theme="a">
 
       <div data-role="header">
         <a href="#files_list"  data-rel="page" data-position-to="window" data-theme="a" data-role="button" data-inline="true" data-mini="true" class="ui-btn-left">Back</a>
         <h1 style="text-align: center; margin: 11px">Select Files to Share</h1>
-      </div><!-- /header -->
+      </div>
 
-      <div data-role="content" data-inset="true" id="local_files_list">
-        <div data-role="collapsible" data-collapsed="false" data-theme="e" data-content-theme="c">
-          <h3>I'm a header</h3>
-          <p>I'm the collapsible content. By default I'm open and displayed on the page, but you can click the header to hide me.</p>
-          
-          <div data-role="collapsible" data-theme="c" data-content-theme="c">
-            <h3>I'm a nested collapsible with a child collapsible</h3>
-            <p>I'm a child collapsible.</p>
-              <div data-role="collapsible" data-theme="d" data-content-theme="d">
-                <h3>Nested inside again.</h3>
-                <p>Three levels deep now.</p>
-              </div><!-- /section 1A -->
-          </div><!-- /section 1 -->
+      <div data-role="content" data-inset="true" id="local_files_list"  data-theme="b">
+       <h3>Files & Folders</h3>
+      </div> 
 
-          
-          <div data-role="collapsible" data-content-theme="c">
-            <h3>Section 3: Form elements</h3>
-            <form action="#" method="get">
-              <div data-role="fieldcontain">
-                <label for="textarea">Textarea:</label>
-                <textarea cols="40" rows="8" name="textarea" id="textarea"></textarea>
-              </div>
-              <div data-role="fieldcontain">
-                <label for="slider">Input slider:</label>
-                <input type="range" name="slider" id="slider" value="0" min="0" max="100"  />
-              </div>
-              <fieldset class="ui-grid-a">
-                  <div class="ui-block-a"><button type="submit" data-theme="c">Cancel</button></div>
-                  <div class="ui-block-b"><button type="submit" data-theme="b">Submit</button></div>     
-                </fieldset>
-            </form>
-          </div><!-- /section 2 -->
-
-          <div data-role="collapsible" data-content-theme="c">
-            <h3>Section 4: Collapsed list</h3>
-            <p>Here is an inset list:</p>
-            <ul data-role="listview" data-inset="true" data-theme="d">
-              <li><a href="index.html">Acura</a></li>
-              <li><a href="index.html">Audi</a></li>
-              <li><a href="index.html">BMW</a></li>
-              <li><a href="index.html">Cadillac</a></li>
-              <li><a href="index.html">Chrysler</a></li>
-              <li><a href="index.html">Dodge</a></li>
-              <li><a href="index.html">Ferrari</a></li>
-              <li><a href="index.html">Ford</a></li>
-            </ul>
-          </div><!-- /section 3 -->
-        </div>
-      </div> <!-- content -->
-
-      <div data-role="footer">
-        
-      </div> <!-- footer -->
-
-      <!-- popup share file menu -->
       <div data-role="popup" id="shareFileMenu" data-overlay-theme="b">
         <ul data-role="listview" data-inset="true" style="width:180px;" data-theme="b">
           <li><a href="" id="share_file_public">Share Public</a></li>
@@ -200,8 +149,8 @@
         <input type="hidden" id="try_to_share_file" name="try_to_share_file" value="" />
       </div>
 
-    </div><!-- /page three register -->
-
+    </div>
+   
     <input type="hidden" id="logged_user_name" name="logged_user_name" value="" />
   </body>
 </html>
