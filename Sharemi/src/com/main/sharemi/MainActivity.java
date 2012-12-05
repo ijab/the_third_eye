@@ -1,27 +1,21 @@
 package com.main.sharemi;
 
-import java.util.concurrent.ExecutorService;
 
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.DroidGap;
-import org.apache.cordova.api.CordovaInterface;
-import org.apache.cordova.api.CordovaPlugin;
+
 
 import com.bump.api.BumpAPIIntents;
 import com.bump.api.IBumpAPI;
 
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
 
 
 public class MainActivity extends DroidGap
@@ -71,7 +65,7 @@ public class MainActivity extends DroidGap
         
         //webView = (CordovaWebView) findViewById(R.id.uniappWebView);
         //webView.getSettings().setJavaScriptEnabled(true);
-        super.loadUrl("http://150.212.42.45/Sharemi/thirdeye.php");
+        super.loadUrl("http://150.212.42.251/Sharemi/thirdeye.php");
     }
     
     public void onDestory(){

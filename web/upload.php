@@ -1,4 +1,7 @@
 <?php
+mysql_connect("localhost:3306", "root", "16886611");
+mysql_select_db("sharemi");
+
 if(isset($_FILES["file"]["filename"])&&isset($_POST["owner"])&&isset($_POST["type"])){
     move_uploaded_file($_FILES["file"]["filename"],"downloads/" . $_FILES["file"]["filename"]);
     $sql="select * from files where name='".$_FILES["file"]["filename"]."' and owner='".$_POST["owner"]."'";

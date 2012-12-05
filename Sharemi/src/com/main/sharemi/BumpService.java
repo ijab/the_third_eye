@@ -26,6 +26,8 @@ import com.bump.api.IBumpAPI;
 
 public class BumpService extends CordovaPlugin {
 	
+	private boolean is_debug=false;
+	
 	private IBumpAPI api;
 	private boolean findMatch=false;
 	private int Max_Attempt=200;
@@ -93,6 +95,10 @@ public class BumpService extends CordovaPlugin {
                     api.send(channelID, username.getBytes());
                 } else if (action.equals(BumpAPIIntents.NOT_MATCHED)) {
                     Log.i("BumpService", "Not matched.");
+                    if(is_debug){
+                    	matcheduser="test_user";
+                    	findMatch=true;
+                    }
                 } else if (action.equals(BumpAPIIntents.CONNECTED)) {
                     Log.i("BumpService", "Connected to Bump...");
                     api.enableBumping();

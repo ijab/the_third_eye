@@ -1,9 +1,6 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+mysql_connect("localhost:3306", "root", "16886611");
+mysql_select_db("sharemi");
 if(isset($_POST["username"])&&isset($_POST["password"])){
     $sql="select password from users where username='".$_POST["username"]."'";
     $result=  mysql_query($sql);
