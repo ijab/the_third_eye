@@ -65,7 +65,7 @@ public class MainActivity extends DroidGap
         
         //webView = (CordovaWebView) findViewById(R.id.uniappWebView);
         //webView.getSettings().setJavaScriptEnabled(true);
-        super.loadUrl("http://150.212.42.251/Sharemi/thirdeye.php");
+        super.loadUrl("http://150.212.42.77/Sharemi/thirdeye.php");
     }
     
     public void onDestory(){

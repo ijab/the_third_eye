@@ -35,6 +35,7 @@ public class BumpService extends CordovaPlugin {
 	private String username="";
 	private String fileid="";
 	private String filename="";
+	private String owner="";
 	private String identity="unknown";
 	private boolean isRunning=false;
 	private boolean isReady=false;
@@ -115,6 +116,9 @@ public class BumpService extends CordovaPlugin {
 		fileid=((JSONObject)args.get(0)).getString("fileid");
 		filename=((JSONObject)args.get(0)).getString("filename");
 		identity=((JSONObject)args.get(0)).getString("isRequestee");
+		if(identity.equals("true")){
+			owner=((JSONObject)args.get(0)).getString("requestor");
+		}
 	    if ("Action1".equals(action)) {
 	        new Thread(new Runnable() {
 	            public void run() {
@@ -152,6 +156,7 @@ public class BumpService extends CordovaPlugin {
 	            		}
 	            	}
 	            	if(findMatch){
+	            		
 	            		JSONObject res=new JSONObject();
 	            		try {
 							res.put("username", matcheduser);
@@ -164,13 +169,19 @@ public class BumpService extends CordovaPlugin {
 						}
 	            		
 	            		Log.d("BUMP Service A", "Match success and call back");
-	            		callbackContext.success(res); 
+	            		if(!owner.equals(matcheduser)&&identity.equals("true")){
+	            			callbackContext.error("You bumped with the wrong guy!");
+	            		}else{
+	            			callbackContext.success(res); 
+	            		}
+	            		}
 	            		findMatch=false;
 	            		matcheduser="";
 	            		fileid="";
 	            		filename="";
+	            		owner="";
 	            		identity="unknown";
-	            	}
+	            	
 	            	try {
 	            		Log.d("BUMP Service A", "Try to disable BUMP service");
 						api.disableBumping();

@@ -11,7 +11,7 @@ mysql_select_db("sharemi");
 function checkDistance($x1,$y1,$x2,$y2){
     $distance = new calcMiles ($y1,$x1,$y2,$x2, "meter");
     $numericalDistance = $distance->lastResult;
-    if($numericalDistance>30){
+    if($numericalDistance>5){
         return false;
     }else{
         return true;
@@ -30,7 +30,7 @@ if(isset($_GET["x"])&&isset($_GET["y"])&&isset($_GET["username"])){
         $sql3="update currentlocation set cordx=".$_GET["x"].", cordy=".$_GET["y"].", time='".$time."' where user='".$_GET["username"]."'";
         mysql_query($sql3);
     }
-    $sql4="select fileid,name as filename,owner,type from files, currentlocation where owner=user and TIME_TO_SEC(TIMEDIFF('".$time."',currentlocation.time))<8";
+    $sql4="select fileid,name as filename,owner,type from files, currentlocation where owner=user and TIME_TO_SEC(TIMEDIFF('".$time."',currentlocation.time))<8 and owner<>'".$_GET["username"]."'";
     $result4=mysql_query($sql4);
     $json='{ "msg":"success","data":{"files":';
     $rows = array();

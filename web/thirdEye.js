@@ -9,16 +9,16 @@ var _debug = false;
 var _dx_debug=false;
 var refreshTimer = null;
 
-// String.prototype.hashCode = function(){
-//     var hash = 0;
-//     if (this.length == 0) return hash;
-//     for (i = 0; i < this.length; i++) {
-//         char = this.charCodeAt(i);
-//         hash = ((hash<<5)-hash)+char;
-//         hash = hash & hash; // Convert to 32bit integer
-//     }
-//     return hash;
-// }
+String.prototype.hashCode = function(){
+    var hash = 0;
+    if (this.length == 0) return hash;
+    for (i = 0; i < this.length; i++) {
+        char = this.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
 
 
 /**
@@ -79,7 +79,7 @@ $(function(){
    
 
     // When change to file list page, try to get shared files
-    $('#files_list').live('pageinit',function (){
+    $('#files_list').on('pageinit',function (){
         if(!_debug)
         {
             startService();
@@ -92,17 +92,10 @@ $(function(){
 
 
     // When change to select file page, try to list local files for choosing to share
-    $('#select_file_page').live('pageinit',function(){
-        if(window.requestFileSystem)
-        {
-            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, onError);
-        }
-        else
-        {
-            var testData = [{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/LOST.DIR","name":"LOST.DIR"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Android","name":"Android"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/DCIM","name":"DCIM"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.GuoheAd","name":".GuoheAd"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.0102","name":".0102"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/sogou","name":"sogou"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/tencent","name":"tencent"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/openfeint","name":"openfeint"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTGIF","name":"MTGIF"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bluetooth","name":"bluetooth"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ibuka","name":"ibuka"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.pps","name":".pps"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/msf","name":"msf"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ndcommplatform","name":"ndcommplatform"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/youmicache","name":"youmicache"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wowfish","name":"wowfish"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Youdao","name":"Youdao"},{"isDirectory":false,"isFile":true,"fullPath":"file:\/\/\/storage\/sdcard0\/robo_defense_full.bak","name":"robo_defense_full.bak"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTXX","name":"MTXX"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/UCDownloads","name":"UCDownloads"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Songs","name":"Songs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bugreports","name":"bugreports"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/PandaSpace","name":"PandaSpace"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.estrongs","name":".estrongs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/snesroms","name":"snesroms"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/91PandaReader","name":"91PandaReader"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/backups","name":"backups"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.cerience","name":".cerience"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/catstudio","name":"catstudio"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/QQBrowser","name":"QQBrowser"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/KuwoMusic","name":"KuwoMusic"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/byread","name":"byread"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Meterial","name":"Meterial"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/My Documents","name":"My Documents"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ONS","name":"ONS"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wallpaper","name":"wallpaper"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ringtones","name":"ringtones"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/music","name":"music"}];
-            successIterFileSystem(testData, null);
-        }
+    $('#select_file_page').on('pageinit', function() { 
+            refreshLocalFilesList();
     });
+   
 
     // Make it happy on Cordova
     $( document ).bind( "mobileinit", function() {
@@ -110,6 +103,7 @@ $(function(){
         $.support.cors = true;
         $.mobile.allowCrossDomainPages = true;
         $.mobile.pushStateEnabled = false;
+        
     });
 });
 
@@ -188,8 +182,7 @@ function updateFilesList(resp)
                 '<li id="' + file.fileid + '">' + 
                 '<a href="javascript:downloadFile(\'' + file.fileid + '\', \'' + file.filename + '\', \'' + file.owner + '\', \'' + file.type + '\')">' +
                 '<h4>' + file.filename + '</h4>' +
-                '<span class="ui-li-count">' + file.owner + '</span>' +
-                '<span class="ui-li-count">' + file.type + '</span></a></li>');
+                '<span class="ui-li-count">' + file.owner + '&nbsp;&nbsp;&nbsp;' + file.type + '</span></a></li>');
     });
     $('#shared_with_me_files_list').listview('refresh');
 
@@ -213,8 +206,7 @@ function updateFilesList(resp)
 
         $('#my_shared_files_list').append('<li id="' + file.fileid + '">' + 
                 '<a href="javascript:removeSharedFile(\'' + file.fileid + '\', \'' + file.filename + '\', \'' + file.type + '\')">' +
-                '<h4>' + file.filename + '</h4>' +
-                '<span class="ui-li-count">' + file.owner + '</span>' +
+                '<h4>Cancel Sharing &nbsp;&nbsp;' + file.filename + '</h4>' +
                 '<span class="ui-li-count">' + file.type + '</span></a></li>');
     });
     $('#my_shared_files_list').listview('refresh');
@@ -310,21 +302,30 @@ function downloadFile(fileid, filename, owner, type)
             requestee : $('#logged_user_name').val()
         }, 
         function(data) {
-            $('#info_tip').html('Please BUMP with ' + owner + ' to get the permission for downloading file in 20 seconds.');
+            if(data.msg == "success")
+            {
+                $('#info_tip').html('Please BUMP with ' + owner + ' to get the permission for downloading file in 20 seconds.');
+                
+                var param = {};
+                param.username = $('#logged_user_name').val();
+                param.fileid = fileid;
+                param.filename = filename;
+                param.requestor = owner;
+                param.isRequestee = 'true';
+                useBumpPlugin(param);
+            }
+            else
+            {
+                $('#info_tip').html(data.reason);
+            }
             $('#popupInfo').popup('open');
 
-            var param = {};
-            param.username = $('#logged_user_name').val();
-            param.fileid = fileid;
-            param.filename = filename;
-            param.requestee = $('#logged_user_name').val();
-            param.isRequestee = 'true';
-            useBumpPlugin(param);
         },
         'json');
 
     }
 }
+
 
 
 /**
@@ -339,11 +340,22 @@ function removeSharedFile(fileid, filename, type)
             type : type
         }, 
         function(data) {
-            $('#' + fileid).remove();
-            $('#my_shared_files_list').listview('refresh');
+            if(data.msg = "success")
+            {
+                $("#info_tip").html('Succeeded removing shared file:' + filename);
+                $('#' + fileid).remove();
+                $('#my_shared_files_list').listview('refresh');
+            }
+            else
+            {
+                $("#info_tip").html(data.reason);
+            }
+            $("#popupInfo").popup('open');
         },
         'json');
 }
+
+
 
 
 /**
@@ -376,7 +388,7 @@ function onGeoSuccess(position) {
  */
 function onError(error) 
 {
-    $('#info_tip').text(error.message);
+    $('#info_tip').html(error.message);
     $('#popupInfo').popup('open');
 }
 
@@ -385,8 +397,6 @@ function onError(error)
  * @method onFileSystemSuccess
  * @param {Object} fileSystem
  */
-var local_file_ix = 0;
-var local_parent_node = null;
 
 function onFileSystemSuccess(fileSystem)
 {
@@ -394,13 +404,16 @@ function onFileSystemSuccess(fileSystem)
     var directoryReader = dirEntry.createReader();
 
     // Remove current local list
-    $('#local_files_list').removeChildren();
+    $('#local_files_list').empty();
 
     // Get a list of all the entries in the directory
     var onReadEntry = function(entries)
                     {
-                        successIterFileSystem(entries, local_parent_node);
+                        successIterFileSystem(entries, null);
                     };
+    if (typeof console != "undefined") { 
+        console.log("Read entries ");
+    }
     directoryReader.readEntries(onReadEntry, onError);
 }
 
@@ -422,12 +435,11 @@ function successIterFileSystem(entries, parent_node)
         if(entries[i].isDirectory)
         {
             // Add directory node
-            var colID = entries[i].name.replace(/ /g,'_')
+            var colID = entries[i].name.replace(/ /g,'_'); //.hashCode();
             var html = '<div id="' + colID;
                 html += '" data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="c">';
                 html += '<h3>' + entries[i].name + '</h3></div>';
-            local_parent_node = colID;
-            
+                        
 
             if(!parent_node)
             {
@@ -435,37 +447,52 @@ function successIterFileSystem(entries, parent_node)
             }
             else
             {
-                $('#' + parent_node).append(html);
+                $('#' + parent_node).children(".ui-collapsible-content").append(html);
             }
 
+            var expandFun = function(entries, i){
+                return function(event, ui) { 
+                        var colID = entries[i].name.replace(/ /g,'_'); //hashCode();
+                        $("#" + colID ).children(".ui-collapsible-content").children().remove();
+
+                        if (typeof console != "undefined") { 
+                            console.log("Expand collapsible element " + entries[i].name + " ID " + colID);
+                        }
+
+                        if(window.resolveLocalFileSystemURI)
+                        {
+                            // Get a list of all the entries in the directory
+                            var onResolveSuccess = function(sub_dir_entry)
+                            {
+                                var onReadEntry = function(sub_entries)
+                                {
+                                    successIterFileSystem(sub_entries, colID);
+                                };
+                                var directoryReader = sub_dir_entry.createReader();
+                                directoryReader.readEntries(onReadEntry, onError);
+                            };
+                            window.resolveLocalFileSystemURI(entries[i].fullPath, onResolveSuccess, function(){});                            
+                        }
+                        return false;
+                    }
+            }(entries, i);
             // Refresh collapsibleset
             $("#" + colID ).collapsible();
+            $("#" + colID).bind('expand', expandFun);
+
             if (typeof console != "undefined") { 
-                console.log("Append collapsible element " + entries[i].name);
+                console.log("Append collapsible element " + entries[i].name + " to " + parent_node ? parent_node : "local_files_list");
             }
-
-            local_file_ix++;
-
-            // Recursively read it
-            // if(!_debug)
-            // {
-            //     var directoryReader = entries[i].createReader();
-
-            //     // Get a list of all the entries in the directory
-            //     var onReadEntry = function(sub_entries)
-            //                     {
-            //                         successIterFileSystem(sub_entries, local_parent_node);
-            //                     };
-            //     directoryReader.readEntries(onReadEntry, onError);
-            // }
         }
         else
         {
-            var ulID = parent_node ? parent_node + local_file_ix : 'local_files_list' + local_file_ix;
+            var ulID = parent_node ? parent_node : "local_files_list";
+                ulID += "_ul_listview";
             var ulHtml = '<ul id="' + ulID + '" data-role="listview" data-inset="true" data-theme="d"></ul>';
             var liEl = '<li><span>' + entries[i].name;
                 liEl += '<span><a href="javascript:popupShareMenu(\'' + entries[i].name + '\', \'' + entries[i].fullPath + '\')"';
                 liEl += ' data-rel="popup" data-role="button" data-inline="true" data-icon="arrow-d">Share</a></li>';
+            
             if(!parent_node)
             {
                 if($('#' + ulID).length < 1) 
@@ -478,17 +505,32 @@ function successIterFileSystem(entries, parent_node)
             {
                if($('#' + ulID).length < 1) 
                 {
-                    $('#' + parent_node).append(ulHtml);
+                    $('#' + parent_node).children(".ui-collapsible-content").append(ulHtml);
+                    $('#' + ulID).listview();
+                     if (typeof console != "undefined") { 
+                        console.log("Append ui element " + entries[i].name + " to " + parent_node ? parent_node : "local_files_list");
+                    }
                 }
             }
             $('#' + ulID).append(liEl);
             $('#' + ulID).listview('refresh');
             if (typeof console != "undefined") { 
-                console.log("Append list element " + entries[i].name);
+                console.log("Append list element " + entries[i].name + " to " + ulID);
             }
-
-            local_file_ix++;
         }
+    }
+}
+
+function refreshLocalFilesList()
+{
+    if(window.requestFileSystem)
+    {
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, onError);
+    }
+    else
+    {
+        var testData = [{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/LOST.DIR","name":"LOST.DIR"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Android","name":"Android"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/DCIM","name":"DCIM"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.GuoheAd","name":".GuoheAd"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.0102","name":".0102"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/sogou","name":"sogou"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/tencent","name":"tencent"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/openfeint","name":"openfeint"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTGIF","name":"MTGIF"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bluetooth","name":"bluetooth"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ibuka","name":"ibuka"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.pps","name":".pps"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/msf","name":"msf"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ndcommplatform","name":"ndcommplatform"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/youmicache","name":"youmicache"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wowfish","name":"wowfish"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Youdao","name":"Youdao"},{"isDirectory":false,"isFile":true,"fullPath":"file:\/\/\/storage\/sdcard0\/robo_defense_full.bak","name":"robo_defense_full.bak"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/MTXX","name":"MTXX"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/UCDownloads","name":"UCDownloads"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Songs","name":"Songs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/bugreports","name":"bugreports"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/PandaSpace","name":"PandaSpace"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.estrongs","name":".estrongs"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/snesroms","name":"snesroms"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/91PandaReader","name":"91PandaReader"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/backups","name":"backups"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/.cerience","name":".cerience"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/catstudio","name":"catstudio"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/QQBrowser","name":"QQBrowser"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/KuwoMusic","name":"KuwoMusic"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/byread","name":"byread"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/Meterial","name":"Meterial"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/My Documents","name":"My Documents"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ONS","name":"ONS"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/wallpaper","name":"wallpaper"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/ringtones","name":"ringtones"},{"isDirectory":true,"isFile":false,"fullPath":"file:\/\/\/storage\/sdcard0\/music","name":"music"}];
+        successIterFileSystem(testData, null);
     }
 }
 
@@ -502,8 +544,8 @@ function uploadFileForSharing(type)
         return;
     }
 
-    $('#info_tip').text('Start uploading ...');
-    $('#popupInfo').popup('open');
+    $('#select_info_tip').html('Start uploading ...');
+    $('#selectPopupInfo').popup('open');
 
     var options = new FileUploadOptions();
     options.fileKey = "file";
@@ -512,18 +554,22 @@ function uploadFileForSharing(type)
 
     var params = {};
     params.owner = $('#logged_user_name').val();
+    params.filename = filename;
     params.type = type;
 
     options.params = params;
 
     var succ = function(r)
             {
-                $('#info_tip').text('Finished uploading ' + filename);
+                $('#shareFileMenu').popup('close');
+                $('#select_info_tip').html('Finished uploading ' + filename);
+                $('#selectPopupInfo').popup('open');
             };
 
     var fail = function(err)
             {
-                $('#info_tip').text('Failed uploading ' + filename);
+                $('#select_info_tip').html('Failed uploading ' + filename);
+                $('#selectPopupInfo').popup('open');
             };
 
     var ft = new FileTransfer();
@@ -598,6 +644,6 @@ function bumpPluginErrorHandler(error)
             function(data) {
                 
             });
-    $('#info_tip').text(error);
+    $('#info_tip').html(error);
     $('#popupInfo').popup('open');
 }

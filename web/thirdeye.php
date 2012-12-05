@@ -84,7 +84,7 @@
     </div><!-- /page two register -->
 
    
-     <!-- Start of first page: #one -->
+     <!-- Start of files list page: #files_list -->
     <div data-role="page" id="files_list">
 
       <div data-role="header">
@@ -113,7 +113,9 @@
               <li><a href="index.html">Sent <span class="ui-li-count">public</span></a></li>
               <li><a href="index.html">Trash <span class="ui-li-count">private</span></a></li>
             </ul>
-            <div data-theme="d"><a href="#select_file_page" data-rel="page" data-position-to="window" data-theme="b" data-role="button" data-inline="true" data-mini="true">Share Files</a></div>
+            <p data-theme="e">
+              <a href="#select_file_page" data-theme="d" data-rel="page" data-role="button">Share Files</a>            
+            </p>
           </div>
         </div>
 
@@ -123,21 +125,25 @@
         
       </div><!-- /footer -->
 
+      <!-- info popup -->
       <div data-role="popup" id="popupInfo" class="ui-content" data-theme="e" style="max-width:350px;">
           <p id="info_tip">Here is a <strong>tiny popup</strong> being used like a tooltip. The text will wrap to multiple lines as needed.</p>
-    </div>
+      </div> <!-- /info popup -->
 
-    </div><!-- /page one -->
+    </div><!-- /file list page -->
 
-    <div data-role="page" id="select_file_page" data-theme="a">
+    <!-- select file page -->
+    <div id="select_file_page" data-role="page" data-theme="c">
 
       <div data-role="header">
         <a href="#files_list"  data-rel="page" data-position-to="window" data-theme="a" data-role="button" data-inline="true" data-mini="true" class="ui-btn-left">Back</a>
         <h1 style="text-align: center; margin: 11px">Select Files to Share</h1>
       </div>
 
-      <div data-role="content" data-inset="true" id="local_files_list"  data-theme="b">
+      <div data-role="content" data-inset="true" data-theme="b">
        <h3>Files & Folders</h3>
+       <div id="local_files_list">
+       </div>
       </div> 
 
       <div data-role="popup" id="shareFileMenu" data-overlay-theme="b">
@@ -149,7 +155,12 @@
         <input type="hidden" id="try_to_share_file" name="try_to_share_file" value="" />
       </div>
 
-    </div>
+      <!-- info popup -->
+      <div data-role="popup" id="selectPopupInfo" class="ui-content" data-theme="e" style="max-width:350px;">
+          <p id="select_info_tip">Here is a <strong>tiny popup</strong> being used like a tooltip. The text will wrap to multiple lines as needed.</p>
+      </div> <!-- /info popup -->
+
+    </div> <!-- /select file page -->    
    
     <input type="hidden" id="logged_user_name" name="logged_user_name" value="" />
   </body>
